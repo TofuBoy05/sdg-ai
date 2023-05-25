@@ -1,8 +1,6 @@
-import GPT3Tokenizer from 'gpt3-tokenizer'
-
-const tokenizer = new GPT3Tokenizer({type: 'gpt3'});
+import { encode } from 'gpt-3-encoder'
 
 export function getTokens(input) {
-    const tokens = tokenizer.encode(input)
-    return tokens.text.length
+    const tokens = encode(input)
+    return tokens.length
 } 
