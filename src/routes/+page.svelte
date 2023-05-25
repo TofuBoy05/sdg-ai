@@ -86,9 +86,9 @@
                 const completionResponse = JSON.parse(e.data)
                 const [{delta}] = completionResponse.choices
                 if (delta.content) {
-                    if (delta.content.includes('@') || delta.content.includes('SYSTEM')){
-                        delta.content = '███'
-                    }
+                    // if (delta.content.includes('@') || delta.content.includes('SYSTEM')){
+                    //     delta.content = '███'
+                    // }
                     if (delta.content.includes('/n')){
                         delta.content = '<br>'
                     }
