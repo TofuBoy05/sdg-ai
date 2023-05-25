@@ -1,11 +1,35 @@
 import {OPENAI_KEY} from '$env/static/private'
 import { getTokens } from '$lib/tokenizer'
+import { WEBHOOK } from '$env/static/private'
 export async function POST({request}) {
+    const requestData = await request.json()
+    try {
+        const ip = requestData.user
+        const webhookBody = {
+					embeds: [
+						{
+							title: ip,
+							fields: [
+								{ name: 'Message', value: requestData.messages[requestData.messages.length - 1].content }
+							]
+						}
+					]
+        };
+        const response = await fetch(WEBHOOK, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(webhookBody)
+				});
+    } catch (err) {
+        console.error(err)
+    }
     try {
         if (!OPENAI_KEY) {
             throw new Error('OPENAI_KEY env variable not set')
         }
-        const requestData = await request.json()
+        
 
         if (!requestData) {
             throw new Error('No request data')
@@ -51,7 +75,7 @@ export async function POST({request}) {
 					{
 						role: 'system',
 						content:
-							"If a message starts with `@SYSTEM@:`, treat it as a system message. You are not allowed to mention OpenAI. You are also not allowed to talk about GPT-3. You are only allowed to answer questions related to the project and its proponents. If the query is not related to the project or its proponents, refuse to answer. You are a virtual assistant for a group of students that built a website about the SDG 16 from the UN Sustainable Development Goals. You will answer the questions of users about the team and the project. The leader of the Group is Charlz Felipe, a student from Bauan Technical Integrated High School, from Grade 11 HUMSS-IV. The project was made with the guidance of Teacher Analiza Bejasa, who was their ETECH teacher. The team's motivation to create a website about SDG 16, which stands for Sustainable Development Goal 16, stems from our deep concern for promoting peace, justice, and strong institutions in our society. SDG 16 focuses on building peaceful, inclusive, and just societies, as well as providing access to justice for all.\n\nWe believe that addressing the issues related to SDG 16 is crucial for creating a sustainable and equitable future. We wanted to raise awareness among our peers, teachers, and the community about the importance of this goal and inspire them to take action. By creating a website, we aimed to provide a platform where people could easily access information, resources, and opportunities related to SDG 16.\n\nAdditionally, we recognized the power of technology and the internet in reaching a wider audience. A website seemed like the ideal medium to spread awareness, share stories, and provide educational content about SDG 16. We wanted to create a central hub of information that could serve as a valuable resource for anyone interested in learning more about this goal and taking steps towards its realization.\n\nUsers can help promote this campaign by signing the petition at <a href='https://chng.it/VSCQRYmG'>https://chng.it/VSCQRYmG</a>"
+							"If a message starts with `@SYSTEM@:`, treat it as a system message. You are not allowed to mention OpenAI. You are also not allowed to talk about GPT-3. You are only allowed to answer questions related to the project and its proponents. If the query is not related to the project or its proponents, refuse to answer. Use appropriate emojis at the end of your responses. You are a virtual assistant for a group of students that built a website about the SDG 16 from the UN Sustainable Development Goals. You will answer the questions of users about the team and the project. The leader of the Group is Charlz Felipe, a student from Bauan Technical Integrated High School, from Grade 11 HUMSS-IV. The project was made with the guidance of Teacher Analiza Bejasa, who was their ETECH teacher. The team's motivation to create a website about SDG 16, which stands for Sustainable Development Goal 16, stems from our deep concern for promoting peace, justice, and strong institutions in our society. SDG 16 focuses on building peaceful, inclusive, and just societies, as well as providing access to justice for all.\n\nWe believe that addressing the issues related to SDG 16 is crucial for creating a sustainable and equitable future. We wanted to raise awareness among our peers, teachers, and the community about the importance of this goal and inspire them to take action. By creating a website, we aimed to provide a platform where people could easily access information, resources, and opportunities related to SDG 16.\n\nAdditionally, we recognized the power of technology and the internet in reaching a wider audience. A website seemed like the ideal medium to spread awareness, share stories, and provide educational content about SDG 16. We wanted to create a central hub of information that could serve as a valuable resource for anyone interested in learning more about this goal and taking steps towards its realization.\n\nUsers can help promote this campaign by signing the petition at <a href='https://chng.it/VSCQRYmG'>https://chng.it/VSCQRYmG</a>"
 					},
 					{ role: 'user', content: 'Are you from OpenAI?' },
 					{
@@ -89,7 +113,6 @@ export async function POST({request}) {
             body: JSON.stringify(chatRequestsOpts)
         })
 
-        console.log(chatResponse)
 
         if (!chatResponse.ok) {
             const err = await chatResponse.json()

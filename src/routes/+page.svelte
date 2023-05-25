@@ -4,6 +4,7 @@
     import { SSE } from 'sse.js'
     import { afterUpdate } from 'svelte';
     import Icon from '@iconify/svelte';
+    import { browser } from '$app/environment'
 
     let inputValue = ''
     let answer = ''
@@ -15,6 +16,29 @@
     let inputArea;
 
     let messagesList = []
+    let user_address;
+    async function address() {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        user_address = data.ip
+    }
+
+    address()
+    
+    async function onDone(content) {
+        // const formData = new FormData(content)
+        const req = fetch('/api/completion_log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                user: user_address
+            })
+        });
+                
+    }
 
     async function submitHandler() {
         
@@ -25,6 +49,8 @@
         if (inputValue == ''){
             return
         }
+
+
         
         messagesList.push({role: 'user', content: inputValue})
         inputValue = ''
@@ -35,7 +61,7 @@
             headers: {
                 'Application-Type': 'application/json'
             },
-            payload: JSON.stringify({messages: messagesList})
+            payload: JSON.stringify({messages: messagesList, user: user_address})
         })
 
         eventSource.addEventListener('error', handleError)
@@ -46,10 +72,12 @@
                 loading = false
                 if (e.data === '[DONE]'){
                     bottom.scrollIntoView({ behavior: 'smooth' });
+                    onDone(answer)
                     messagesList = [...messagesList, { role: 'assistant', content: answer}]
                     answer = ''
                     generating = false
                     inputArea.focus()
+                    
                     return
                 }
 

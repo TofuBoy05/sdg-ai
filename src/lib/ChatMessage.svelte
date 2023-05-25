@@ -8,7 +8,7 @@
 <div class="chat chat-end">
   <div class="chat-image avatar">
     <div class="w-10 rounded-full">
-      <img src="favicon.png" />
+      <img src="user.jpg" />
     </div>
   </div>
   <div class="chat-header">
@@ -22,7 +22,7 @@
 <div class="chat chat-start">
   <div class="chat-image avatar">
     <div class="w-10 rounded-full">
-      <img src="favicon.png" />
+      <img src="aicon.jpg" />
     </div>
   </div>
   <div class="chat-header">
