@@ -23,7 +23,9 @@
         user_address = data.ip
     }
 
-    address()
+    if (browser){
+        address()
+    }
     
     async function onDone(content) {
         // const formData = new FormData(content)
